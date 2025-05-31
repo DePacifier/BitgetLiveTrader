@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+SQLAlchemy
+aiosqlite
+ccxt
+python-dotenv
+python-telegram-bot
+PyYAML
