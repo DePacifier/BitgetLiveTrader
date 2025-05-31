@@ -9,6 +9,7 @@ from .dispatcher import Dispatcher
 from .trader import Trader
 from .db import init_db
 from .config import settings
+from .notifier import notify
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
@@ -28,6 +29,9 @@ async def closeTraders():
     for trader in traders:
         await trader.close()
         
+async def notifyAll(text: str):
+    for trader in traders:
+        await notify(trader.chat_id, text)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,9 +39,17 @@ async def lifespan(app: FastAPI):
     await init_db()
     await startDispatcher()
     await loadMarkets()
-    yield
-    print(">> Shutting down Server")
-    await closeTraders()
+    await notifyAll("⚡Server started and traders initialized")
+    print(">> Server is ready")
+    try:
+        yield
+    except Exception as e:
+        await notifyAll("❗ Server failed: \n" + str(e))
+        raise
+    finally:
+        print(">> Shutting down Server")
+        await closeTraders()
+        await notifyAll("😓 Server stopped")
 
 app = FastAPI(title="Bitget Trader", lifespan=lifespan)
 
