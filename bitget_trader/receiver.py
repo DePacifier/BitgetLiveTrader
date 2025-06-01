@@ -77,3 +77,7 @@ async def webhook(req: Request):
 
     await _dispatcher.enqueue(sig)
     return {"status": "ok"}
+
+@app.get("/ping")
+async def ping():
+    return {"status": "pong"}
