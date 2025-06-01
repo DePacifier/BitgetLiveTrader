@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from fastapi import FastAPI, HTTPException, Request, status
 from contextlib import asynccontextmanager
+import requests
 
 from .signals import Signal
 from .dispatcher import Dispatcher
@@ -39,7 +40,11 @@ async def lifespan(app: FastAPI):
     await init_db()
     await startDispatcher()
     await loadMarkets()
-    await notifyAll("⚡Server started and traders initialized")
+    try:
+        public_ip = requests.get("http://checkip.amazonaws.com").text.strip()
+    except Exception:
+        public_ip = "UNKNOWN"
+    await notifyAll(f"⚡ Server started and traders initialized on:\nhttp://{public_ip}:8000")
     print(">> Server is ready")
     try:
         yield
