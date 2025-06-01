@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
         public_ip = requests.get("http://checkip.amazonaws.com").text.strip()
     except Exception:
         public_ip = "UNKNOWN"
-    await notifyAll(f"⚡ Server started and traders initialized on:\nhttp://{public_ip}:8000")
+    await notifyAll(f"⚡ Server started and traders initialized on:\nhttp://{public_ip}/webhook")
     print(">> Server is ready")
     try:
         yield
